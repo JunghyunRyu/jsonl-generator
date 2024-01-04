@@ -1,51 +1,50 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022)
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import streamlit as st
-from streamlit.logger import get_logger
+import json
 
-LOGGER = get_logger(__name__)
+# 세션 상태 초기화
+if 'messages' not in st.session_state:
+    st.session_state['messages'] = []
+if 'jsonl_data' not in st.session_state:
+    st.session_state['jsonl_data'] = ""
+if 'current_index' not in st.session_state:
+    st.session_state['current_index'] = 1  # 현재 항목 번호
 
+def add_message_area(index):
+    st.markdown(f"### {st.session_state['current_index']}번째 항목")  # 현재 항목 번호 출력
+    with st.container():
+        role = st.selectbox("Role", ["system", "assistant", "user"], key=f"role_{index}")
+        content = st.text_area("Content", key=f"content_{index}")
+        st.session_state['messages'][index] = {"role": role, "content": content}
 
-def run():
-    st.set_page_config(
-        page_title="Hello",
-        page_icon="👋",
-    )
+st.title("JSONL Message Creator")
 
-    st.write("# Welcome to Streamlit! 👋")
+# '+' 버튼으로 메시지 입력 영역 추가
+if st.button("Adding the prompt"):
+    st.session_state['messages'].append({})
 
-    st.sidebar.success("Select a demo above.")
+# 동적으로 메시지 입력 영역 생성
+for i in range(len(st.session_state['messages'])):
+    add_message_area(i)
 
-    st.markdown(
-        """
-        Streamlit is an open-source app framework built specifically for
-        Machine Learning and Data Science projects.
-        **👈 Select a demo from the sidebar** to see some examples
-        of what Streamlit can do!
-        ### Want to learn more?
-        - Check out [streamlit.io](https://streamlit.io)
-        - Jump into our [documentation](https://docs.streamlit.io)
-        - Ask a question in our [community
-          forums](https://discuss.streamlit.io)
-        ### See more complex demos
-        - Use a neural net to [analyze the Udacity Self-driving Car Image
-          Dataset](https://github.com/streamlit/demo-self-driving)
-        - Explore a [New York City rideshare dataset](https://github.com/streamlit/demo-uber-nyc-pickups)
-    """
-    )
+# '저장' 버튼
+if st.button("Save"):
+    # 현재까지의 메시지를 JSON 형태로 화면에 표시
+    current_json = {"messages": [message for message in st.session_state['messages'] if message]}
+    st.json(current_json)
 
+    # JSONL 파일 업데이트
+    new_jsonl = json.dumps(current_json, ensure_ascii=False)
+    st.session_state['jsonl_data'] += new_jsonl + "\n"
 
-if __name__ == "__main__":
-    run()
+# '다음' 버튼
+if st.button("Next"):
+    # 현재 항목 번호 증가
+    st.session_state['current_index'] += 1
+
+    # 메시지 초기화 및 페이지 상단으로 스크롤
+    st.session_state['messages'] = []
+    st.experimental_rerun()
+
+# 'Download JSONL' 버튼
+if st.button("작업 완료"):
+    st.download_button(label="Download JSONL", data=st.session_state['jsonl_data'], file_name="messages.jsonl", mime="text/plain")

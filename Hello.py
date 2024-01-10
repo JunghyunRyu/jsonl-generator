@@ -6,6 +6,8 @@ if 'messages' not in st.session_state:
     st.session_state['messages'] = []
 if 'jsonl_data' not in st.session_state:
     st.session_state['jsonl_data'] = ""
+if 'saved_lines' not in st.session_state:  # saved_lines 키 추가
+    st.session_state['saved_lines'] = 0
 
 def add_message_area(index):
     with st.container():
@@ -28,7 +30,7 @@ def add_message_area(index):
         st.session_state['messages'][index] = {"role": role, "content": content}
 
 def generate_jsonl_preview(messages):
-    return json.dumps({"messages": messages}, ensure_ascii=False, indent=2)
+    return json.dumps({"messages": messages}, ensure_ascii=False)
 
 st.title("JSONL Message Creator")
 
@@ -44,7 +46,7 @@ st.text_area("JSONL Preview", jsonl_preview, height=300)
 
 if st.button("Save"):
     st.session_state['jsonl_data'] += jsonl_preview + "\n"
-    st.session_state['saved_lines'] += jsonl_preview.count('\n') + 1
+    st.session_state['saved_lines'] += 1
     st.session_state['messages'] = []
     st.success(f"Saved! {st.session_state['saved_lines']} lines saved so far.")
     st.rerun()

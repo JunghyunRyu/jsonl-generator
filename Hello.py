@@ -9,13 +9,17 @@ if 'jsonl_data' not in st.session_state:
 if 'saved_lines' not in st.session_state:  # saved_lines 키 추가
     st.session_state['saved_lines'] = 0
 
-def add_message_area(index):
+def add_message_area(index,default_role="-----select-----"):
     with st.container():
         role_key = f"role_{index}"
         content_key = f"content_{index}"
 
         # 역할 선택
-        role = st.selectbox("Role", ["-----select-----","system", "user", "assistant"], key=role_key)
+        #role = st.selectbox("Role", ["-----select-----","system", "user", "assistant"], key=role_key)
+        # 역할 선택 (디폴트 값 설정)
+        role = st.selectbox("Role", ["-----select-----", "system", "user", "assistant"], 
+                            index=["-----select-----", "system", "user", "assistant"].index(default_role), 
+                            key=role_key)        
 
         # 'system'을 선택했을 때의 기본 텍스트
         default_text = ""
@@ -35,10 +39,16 @@ def generate_jsonl_preview(messages):
 st.title("JSONL Message Creator")
 
 if st.button("Add Prompt"):
-    st.session_state['messages'].append({})
+    st.session_state['messages'].append({"role": "system", "content": ""})
+    st.session_state['messages'].append({"role": "user", "content": ""})
+    st.session_state['messages'].append({"role": "assistant", "content": ""})
+    #st.session_state['messages'].append({})
 
-for i in range(len(st.session_state['messages'])):
-    add_message_area(i)
+for i, message in enumerate(st.session_state['messages']):
+    add_message_area(i, default_role=message.get("role", "-----select-----"))
+
+# for i in range(len(st.session_state['messages'])):
+#     add_message_area(i)
 
 # JSONL 미리보기
 jsonl_preview = generate_jsonl_preview([message for message in st.session_state['messages'] if message])

@@ -36,13 +36,26 @@ def add_message_area(index,default_role="-----select-----"):
 def generate_jsonl_preview(messages):
     return json.dumps({"messages": messages}, ensure_ascii=False)
 
-st.title("JSONL Message Creator")
+# 특정 역할의 단일 메시지 추가 함수
+def add_single_message(role):
+    st.session_state['messages'].append({"role": role, "content": ""})
 
-if st.button("Add Prompt"):
-    st.session_state['messages'].append({"role": "system", "content": ""})
-    st.session_state['messages'].append({"role": "user", "content": ""})
-    st.session_state['messages'].append({"role": "assistant", "content": ""})
-    #st.session_state['messages'].append({})
+# 사이드바에 버튼 배치
+with st.sidebar:
+    st.title("Add Prompts")
+    if st.button("Add Prompt"):
+        st.session_state['messages'].append({"role": "system", "content": ""})
+        st.session_state['messages'].append({"role": "user", "content": ""})
+        st.session_state['messages'].append({"role": "assistant", "content": ""})
+        #st.session_state['messages'].append({})
+    if st.button("Add Single System Prompt"):
+        add_single_message("system")
+    if st.button("Add Single User Prompt"):
+        add_single_message("user")
+    if st.button("Add Single Assistant Prompt"):
+        add_single_message("assistant")
+
+st.title("JSONL Message Creator")
 
 for i, message in enumerate(st.session_state['messages']):
     add_message_area(i, default_role=message.get("role", "-----select-----"))

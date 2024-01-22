@@ -54,12 +54,7 @@ with st.sidebar:
         add_single_message("user")
     if st.button("Add Single Assistant Prompt"):
         add_single_message("assistant")
-    if st.button("Save"):
-        st.session_state['jsonl_data'] += jsonl_preview + "\n"
-        st.session_state['saved_lines'] += 1
-        st.session_state['messages'] = []
-        st.success(f"Saved! {st.session_state['saved_lines']} lines saved so far.")
-        st.rerun()
+
 
 st.title("JSONL Message Creator")
 
@@ -72,9 +67,17 @@ for i, message in enumerate(st.session_state['messages']):
 # JSONL 미리보기
 jsonl_preview = generate_jsonl_preview([message for message in st.session_state['messages'] if message])
 st.text_area("JSONL Preview", jsonl_preview, height=300)
+# 사이드바에 버튼 배치
+with st.sidebar:
+    if st.button("Save"):
+        st.session_state['jsonl_data'] += jsonl_preview + "\n"
+        st.session_state['saved_lines'] += 1
+        st.session_state['messages'] = []
+        st.success(f"Saved! {st.session_state['saved_lines']} lines saved so far.")
+        st.rerun()
+    # 'Download JSONL' 버튼
+    if st.button("Complete Work"):
+        st.download_button(label="Download JSONL", data=st.session_state['jsonl_data'], file_name="messages.jsonl", mime="text/plain")
 
 
 
-# 'Download JSONL' 버튼
-if st.button("Complete Work"):
-    st.download_button(label="Download JSONL", data=st.session_state['jsonl_data'], file_name="messages.jsonl", mime="text/plain")

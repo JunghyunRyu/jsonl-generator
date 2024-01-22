@@ -24,9 +24,9 @@ def add_message_area(index,default_role="-----select-----"):
         # 'system'을 선택했을 때의 기본 텍스트
         default_text = ""
         if role == "system":
-            default_text = "You are a helper in creating great Python Playlight automation code. " \
-                           "You need to pass the automation test code based on the sentences you are passing in. " \
-                           "In particular, the solution is related to the Cafe24 shopping mall platform."
+            default_text = "You are currently engaged in a web page automation testing process using Python's Playwright framework. " \
+                           "Your task is to comprehend the requirements presented to you and provide the corresponding Python Playwright code snippets as a solution." \
+                           "The response should strictly consist of Python Playwright code fragments that fulfill the specific automation tasks requested."
 
         # 컨텐츠 입력 영역
         content = st.text_area("Content", value=default_text, key=content_key)

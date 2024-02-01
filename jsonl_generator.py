@@ -15,13 +15,13 @@ def add_message_area(index):
         # 역할 선택
         role = st.selectbox("Role", ["-----select-----","system", "user", "assistant"], key=role_key)
 
-        # 'system'을 선택했을 때의 기본 텍스트
+        # '기본 텍스트
         default_text = ""
         if role == "system":
-            default_text = "You are a helper in creating great Python Playlight automation code. " \
-                           "You need to pass the automation test code based on the sentences you are passing in. " \
-                           "In particular, the solution is related to the Cafe24 shopping mall platform."
-
+            default_text = "In your submissions, please include specific 'test case steps' and 'expected results' for each scenario.\
+                            Format your test case steps in a structured manner, clearly defining the action, the element it interacts with, and any input or navigation required. \
+                            For expected results, describe the intended outcome, such as a successful login, a completed form submission, or a correct page display. \
+                            Ensure that these test cases and expected results are compatible with Python's Playwright framework for automation testing, focusing on clear and detailed descriptions to facilitate accurate test script development."        
         # 컨텐츠 입력 영역
         content = st.text_area("Content", value=default_text, key=content_key)
 
